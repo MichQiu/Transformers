@@ -59,6 +59,7 @@ class MultiHeadAttention(nn.Module):
 		self.attention = ScaledDotProductAttention(d_k ** 0.5)
 		self.dropout = nn.Dropout(dropout)
 		self.layer_norm = nn.LayerNorm(model_d, eps=1e-6)
+		self.fc = nn.Linear(n_head * d_v, d_model, bias=False)
 
 	def forward(self, q, k, v, attn_mask=None):
 		d_k, d_v, n_head = self.d_k, self.d_v, self.n_head
