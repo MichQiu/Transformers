@@ -79,12 +79,13 @@ class MultiHeadAttention(nn.Module):
 		if attn_mask is not None:
 			attn_mask = attn_mask.unsqueeze(1) # For head axis broadcasting, add an extra dimension at dimension 1
 
-		q, attn = self.attention(q, k, v, attn_mask=attn_mask)
+		q, attn = self.attention(q, k, v, attn_mask=attn_mask) # compute attention
+		q = self.dropout(q) # apply dropout
 
 		# Transpose to move the head dimension back to [batch_l, len_q, n_head, d_v]
 		# Combine the last two dimensions to concatenate the heads together
 		q = q.transpose(1, 2).contiguous().view(batch_size, len_q, -1)
-		q = self.dropout(self.fc(q)) # Linear projection and dropout
+		q = self.fc(q) # Linear projection
 		q += residual # add residual connection and output together
 
 		q = self.layer_norm(q) # Layer normalization
